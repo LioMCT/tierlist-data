@@ -4,68 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VoyageTiers Tierlist</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: white; text-align: center; padding: 20px; }
-        .container { max-width: 900px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        h1 { color: #ffcc00; text-transform: uppercase; letter-spacing: 2px; }
-        table { width: 100%; margin-top: 20px; border-collapse: collapse; }
-        th, td { padding: 15px; border-bottom: 1px solid #333; text-align: left; }
-        th { background: #252525; color: #aaa; text-transform: uppercase; font-size: 12px; }
-        tr:hover { background: #292929; }
-        .player-cell { display: flex; align-items: center; gap: 10px; }
-        .head { width: 32px; height: 32px; border-radius: 3px; }
-        .tier-badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 14px; }
-        .tier-HT { background: #ff4444; color: white; }
-        .tier-LT { background: #44ff44; color: black; }
-        .tier-Unranked { background: #555; color: white; }
+        :root { --primary: #ffcc00; --bg: #0f0f0f; --card: #1a1a1a; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: white; margin: 0; padding: 40px 20px; }
+        .container { max-width: 1000px; margin: auto; }
+        
+        h1 { font-size: 3rem; font-weight: 800; margin-bottom: 10px; background: linear-gradient(to right, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        p.subtitle { color: #666; margin-bottom: 40px; font-size: 1.1rem; }
+
+        .tier-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        th { text-align: left; padding: 15px 20px; color: #444; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        td { background: var(--card); padding: 15px 20px; border: 1px solid #222; }
+        td:first-child { border-radius: 12px 0 0 12px; border-right: none; }
+        td:last-child { border-radius: 0 12px 12px 0; border-left: none; }
+        tr:hover td { border-color: #444; background: #222; transition: 0.2s; }
+
+        .player { display: flex; align-items: center; gap: 15px; font-weight: 600; }
+        .head { width: 36px; height: 36px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 800; display: inline-block; }
+        .badge-HT { background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.3); }
+        .badge-LT { background: rgba(68, 255, 68, 0.1); color: #44ff44; border: 1px solid rgba(68, 255, 68, 0.3); }
+        .badge-Unranked { background: #222; color: #777; }
+
+        .region-tag { color: #555; font-family: monospace; font-size: 0.9rem; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Server PvP Tierlist</h1>
-        <table>
+        <h1>Tierlist</h1>
+        <p class="subtitle">Offizielle PvP-Rankings der Community</p>
+        
+        <table class="tier-table">
             <thead>
                 <tr>
                     <th>Player</th>
-                    <th>Tier</th>
+                    <th>Rank</th>
                     <th>Region</th>
                 </tr>
             </thead>
             <tbody id="tierlist-body">
-                <tr><td colspan="3">Loading data...</td></tr>
-            </tbody>
+                </tbody>
         </table>
     </div>
 
     <script>
-        async function loadTierlist() {
+        async function load() {
             try {
-                const response = await fetch('tierlist.json');
-                const data = await response.json();
+                const res = await fetch('tierlist.json');
+                const data = await res.json();
                 const body = document.getElementById('tierlist-body');
                 body.innerHTML = '';
 
-                data.forEach(player => {
-                    const isHigh = player.tier.startsWith('HT');
-                    const tierType = isHigh ? 'HT' : (player.tier === 'Unranked' ? 'Unranked' : 'LT');
-                    
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="player-cell">
-                            <img class="head" src="https://minotar.net/helm/${player.username}/32.png">
-                            ${player.username}
-                        </td>
-                        <td><span class="tier-badge tier-${tierType}">${player.tier}</span></td>
-                        <td>${player.region}</td>
+                data.forEach(p => {
+                    const type = p.tier.startsWith('HT') ? 'HT' : (p.tier === 'Unranked' ? 'Unranked' : 'LT');
+                    body.innerHTML += `
+                        <tr>
+                            <td><div class="player"><img class="head" src="https://minotar.net/helm/${p.username}/36.png">${p.username}</div></td>
+                            <td><span class="badge badge-${type}">${p.tier}</span></td>
+                            <td><span class="region-tag">${p.region}</span></td>
+                        </tr>
                     `;
-                    body.appendChild(row);
                 });
-            } catch (err) {
-                document.getElementById('tierlist-body').innerHTML = '<tr><td colspan="3">No data available yet. Please complete a test in Discord!</td></tr>';
-            }
+            } catch (e) { console.error(e); }
         }
-        loadTierlist();
-        setInterval(loadTierlist, 60000); // Aktualisiert jede Minute
+        load();
     </script>
 </body>
 </html>
