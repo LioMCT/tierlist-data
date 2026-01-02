@@ -3,16 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoyageTiers Tierlist</title>
+    <title>VoyageTiers List | Official Rankings</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #ffcc00; --bg: #0f0f0f; --card: #1a1a1a; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: white; margin: 0; padding: 40px 20px; }
-        .container { max-width: 1000px; margin: auto; }
+        :root { --primary: #5865F2; --bg: #0f0f0f; --card: #1a1a1a; --accent: #ffcc00; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: white; margin: 0; padding: 0; }
         
-        h1 { font-size: 3rem; font-weight: 800; margin-bottom: 10px; background: linear-gradient(to right, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        p.subtitle { color: #666; margin-bottom: 40px; font-size: 1.1rem; }
+        /* Header & Navigation */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: rgba(26, 26, 26, 0.8); backdrop-filter: blur(10px); sticky: top; z-index: 100; border-bottom: 1px solid #222; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: #fff; text-decoration: none; }
+        .logo span { color: var(--accent); }
+        .discord-btn { background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .discord-btn:hover { background: #4752c4; transform: translateY(-2px); }
 
+        .hero { text-align: center; padding: 80px 20px; background: radial-gradient(circle at center, #1a1a1a 0%, #0f0f0f 100%); }
+        h1 { font-size: 3.5rem; font-weight: 800; margin: 0; background: linear-gradient(to right, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: #666; font-size: 1.2rem; margin-top: 10px; }
+
+        .container { max-width: 1000px; margin: auto; padding: 40px 20px; }
+
+        /* Discord Call-to-Action Section */
+        .cta-section { background: linear-gradient(90deg, #1e1e1e 0%, #252525 100%); border: 1px solid #333; border-radius: 16px; padding: 30px; margin-bottom: 50px; display: flex; justify-content: space-between; align-items: center; }
+        .cta-text h2 { margin: 0; font-size: 1.5rem; }
+        .cta-text p { margin: 5px 0 0; color: #aaa; }
+
+        /* Table Design */
         .tier-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
         th { text-align: left; padding: 15px 20px; color: #444; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
         td { background: var(--card); padding: 15px 20px; border: 1px solid #222; }
@@ -29,12 +44,37 @@
         .badge-Unranked { background: #222; color: #777; }
 
         .region-tag { color: #555; font-family: monospace; font-size: 0.9rem; }
+
+        @media (max-width: 600px) {
+            .cta-section { flex-direction: column; text-align: center; gap: 20px; }
+            h1 { font-size: 2.5rem; }
+        }
     </style>
 </head>
 <body>
+
+    <nav class="navbar">
+        <a href="#" class="logo">Voyage<span>Tiers</span></a>
+        <a href="https://discord.gg/WhBvccsCtG" target="_blank" class="discord-btn">
+            Join Discord
+        </a>
+    </nav>
+
+    <div class="hero">
+        <h1>VoyageTiers List</h1>
+        <p class="subtitle">Official PvP Rankings and Combat Evaluations</p>
+    </div>
+
     <div class="container">
-        <h1>Tierlist</h1>
-        <p class="subtitle">Offizielle PvP-Rankings der Community</p>
+        <div class="cta-section">
+            <div class="cta-text">
+                <h2>Want to be tested?</h2>
+                <p>Join our Discord to start your evaluation.</p>
+            </div>
+            <a href="https://discord.gg/WhBvccsCtG" target="_blank" class="discord-btn">
+                Connect Now
+            </a>
+        </div>
         
         <table class="tier-table">
             <thead>
@@ -67,9 +107,13 @@
                         </tr>
                     `;
                 });
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error(e);
+                document.getElementById('tierlist-body').innerHTML = '<tr><td colspan="3" style="text-align:center; color:#555;">No players ranked yet.</td></tr>';
+            }
         }
         load();
+        setInterval(load, 60000);
     </script>
 </body>
 </html>
