@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PvP Tierlist</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: white; text-align: center; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h1 { color: #ffcc00; text-transform: uppercase; letter-spacing: 2px; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+        th, td { padding: 15px; border-bottom: 1px solid #333; text-align: left; }
+        th { background: #252525; color: #aaa; text-transform: uppercase; font-size: 12px; }
+        tr:hover { background: #292929; }
+        .player-cell { display: flex; align-items: center; gap: 10px; }
+        .head { width: 32px; height: 32px; border-radius: 3px; }
+        .tier-badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 14px; }
+        .tier-HT { background: #ff4444; color: white; }
+        .tier-LT { background: #44ff44; color: black; }
+        .tier-Unranked { background: #555; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Server PvP Tierlist</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Tier</th>
+                    <th>Region</th>
+                </tr>
+            </thead>
+            <tbody id="tierlist-body">
+                <tr><td colspan="3">Loading data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadTierlist() {
+            try {
+                const response = await fetch('tierlist.json');
+                const data = await response.json();
+                const body = document.getElementById('tierlist-body');
+                body.innerHTML = '';
+
+                data.forEach(player => {
+                    const isHigh = player.tier.startsWith('HT');
+                    const tierType = isHigh ? 'HT' : (player.tier === 'Unranked' ? 'Unranked' : 'LT');
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="player-cell">
+                            <img class="head" src="https://minotar.net/helm/${player.username}/32.png">
+                            ${player.username}
+                        </td>
+                        <td><span class="tier-badge tier-${tierType}">${player.tier}</span></td>
+                        <td>${player.region}</td>
+                    `;
+                    body.appendChild(row);
+                });
+            } catch (err) {
+                document.getElementById('tierlist-body').innerHTML = '<tr><td colspan="3">No data available yet. Please complete a test in Discord!</td></tr>';
+            }
+        }
+        loadTierlist();
+        setInterval(loadTierlist, 60000); // Aktualisiert jede Minute
+    </script>
+</body>
+</html>
