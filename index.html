@@ -1,219 +1,207 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoyageTiers | Global Leaderboard</title>
+    <title>VoyageTiers | Official Leaderboard</title>
     <style>
         :root {
-            --bg-color: #0f1113;
-            --card-bg: #1a1d21;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --accent: #3498db;
-            --success: #2ecc71;
-            --danger: #e74c3c;
-            
-            /* Gamemode Colors */
-            --color-mace: #9b59b6;
-            --color-smp: #2ecc71;
-            --color-sword: #3498db;
-            --color-spear: #e67e22;
+            --bg-blur: rgba(15, 17, 19, 0.85);
+            --card-glass: rgba(26, 29, 33, 0.7);
+            --accent: #00d2ff;
+            --accent-glow: rgba(0, 210, 255, 0.4);
+            --text-main: #ffffff;
+            --text-dim: #b0b0b0;
+            --status-open: #00ff88;
+            --status-closed: #ff4d4d;
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
             margin: 0;
+            color: var(--text-main);
+            /* This adds a cool Minecraft-style blurred background */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.alphacoders.com/134/1343463.png');
+            background-size: cover;
+            background-attachment: fixed;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            min-height: 100vh;
         }
 
-        .header-section { text-align: center; margin-bottom: 20px; }
-        h1 { font-size: 2.5rem; margin: 0; color: var(--accent); }
-        
-        /* Live Status Bar */
-        .status-ribbon {
-            display: flex;
-            gap: 15px;
-            background: #252a30;
-            padding: 10px 20px;
-            border-radius: 50px;
-            margin-bottom: 25px;
-            font-size: 0.85rem;
-            border: 1px solid #333;
-        }
-        .status-item { display: flex; align-items: center; gap: 6px; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; }
-        .dot.open { background: var(--success); box-shadow: 0 0 8px var(--success); }
-        .dot.closed { background: var(--danger); }
-
-        .search-container {
+        /* 💎 Glassmorphism Header */
+        .header-container {
             width: 100%;
-            max-width: 500px;
-            margin-bottom: 20px;
+            padding: 40px 0;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+        }
+
+        h1 {
+            font-size: 3rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin: 0;
+            background: linear-gradient(to right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* 🔍 Search & Status */
+        .controls {
+            width: 90%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
         .search-bar {
             width: 100%;
-            padding: 12px 25px;
-            background: var(--card-bg);
-            border: 1px solid #333;
-            border-radius: 30px;
+            padding: 15px 25px;
+            background: var(--card-glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
             color: white;
+            font-size: 1.1rem;
             outline: none;
             transition: 0.3s;
         }
-        .search-bar:focus { border-color: var(--accent); }
 
-        .tabs {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
+        .search-bar:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        .tab-btn {
-            background: var(--card-bg);
-            border: 1px solid #333;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.2s;
-        }
-        .tab-btn.active { background: var(--accent); border-color: var(--accent); }
-
-        .mode-icon { width: 18px; height: 18px; object-fit: contain; }
-
-        .container {
-            width: 100%;
+        /* 📋 The Leaderboard Card */
+        .leaderboard-card {
+            width: 90%;
             max-width: 1000px;
-            background: var(--card-bg);
-            border-radius: 12px;
+            background: var(--card-glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            margin-bottom: 50px;
         }
 
         table { width: 100%; border-collapse: collapse; }
-        th { background: #252a30; padding: 15px; text-align: left; color: var(--text-secondary); font-size: 0.8rem; }
-        td { padding: 12px 15px; border-bottom: 1px solid #2d3238; }
+        
+        th {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            text-align: left;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
 
-        .player-cell { display: flex; align-items: center; gap: 12px; }
-        .player-head { width: 32px; height: 32px; border-radius: 4px; }
+        td { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-        .rank-badge {
+        /* 👤 Player Styling */
+        .player-info { display: flex; align-items: center; gap: 15px; }
+        
+        .player-head {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        /* 🏷️ Badge Styling (Matching UltraTiers) */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.85rem;
             display: inline-flex;
             align-items: center;
-            padding: 4px 10px;
-            border-radius: 5px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            gap: 6px;
+            gap: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .badge-mace { background: rgba(155, 89, 182, 0.15); color: var(--color-mace); border: 1px solid var(--color-mace); }
 
-        .footer { margin-top: 30px; color: var(--text-secondary); font-size: 0.8rem; }
+        .badge img { width: 16px; height: 16px; }
+
+        /* Status Bar */
+        .status-ribbon {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .status-pill {
+            background: rgba(0,0,0,0.4);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .dot.online { background: var(--status-open); box-shadow: 0 0 8px var(--status-open); }
     </style>
 </head>
 <body>
 
-    <div class="header-section">
+    <div class="header-container">
         <h1>VoyageTiers</h1>
-        <div id="liveStatus" class="status-ribbon">
-            <span style="color: #666;">Loading Live Status...</span>
-        </div>
+        <div id="liveStatus" class="status-ribbon"></div>
     </div>
 
-    <div class="search-container">
-        <input type="text" id="playerSearch" class="search-bar" placeholder="Search for a player..." onkeyup="renderUI()">
-    </div>
-    
-    <div class="tabs" id="tabContainer">
-        <button class="tab-btn active" onclick="updateTable('all', this)">🌐 Overall</button>
-        <button class="tab-btn" onclick="updateTable('Mace', this)">Mace</button>
-        <button class="tab-btn" onclick="updateTable('SMP', this)">SMP</button>
+    <div class="controls">
+        <input type="text" id="playerSearch" class="search-bar" placeholder="Search for a champion..." onkeyup="renderUI()">
     </div>
 
-    <div class="container">
+    <div class="leaderboard-card">
         <table>
             <thead>
-                <tr id="headerRow">
+                <tr>
                     <th>Player</th>
                     <th>Region</th>
-                    <th>Ranks</th>
+                    <th>Rankings</th>
                 </tr>
             </thead>
             <tbody id="leaderboardBody"></tbody>
         </table>
     </div>
 
-    <div class="footer" id="lastUpdated">Last Sync: --:--</div>
-
     <script>
         const config = {
-            "Mace": { emoji: "https://minecraft.wiki/images/Mace_JE1_BE1.png", class: "badge-mace" },
-            "SMP": { emoji: "🌲", class: "badge-smp" }
+            "Mace": { emoji: "https://minecraft.wiki/images/Mace_JE1_BE1.png", color: "#9b59b6" },
+            "SMP": { emoji: "🌲", color: "#2ecc71" }
         };
 
         let rawData = {};
-        let currentMode = 'all';
 
-        function getIcon(mode) {
-            const cfg = config[mode];
-            if (!cfg) return "";
-            return cfg.emoji.startsWith('http') ? `<img src="${cfg.emoji}" class="mode-icon">` : cfg.emoji;
-        }
-
-        async function fetchData() {
+        async function init() {
             try {
-                // Fetch Data
                 const res = await fetch('https://raw.githubusercontent.com/LioMCT/tierlist-data/main/tierlist.json?t=' + Date.now());
                 rawData = await res.json();
                 
-                // Fetch Status
-                const statusRes = await fetch('https://raw.githubusercontent.com/LioMCT/tierlist-data/main/status.json?t=' + Date.now());
-                const statusData = await statusRes.json();
-                
-                renderStatus(statusData);
+                const sRes = await fetch('https://raw.githubusercontent.com/LioMCT/tierlist-data/main/status.json?t=' + Date.now());
+                renderStatus(await sRes.json());
                 renderUI();
-                document.getElementById('lastUpdated').innerText = "Last Sync: " + new Date().toLocaleTimeString();
-            } catch (e) { console.error(e); }
+            } catch(e) { console.error(e); }
         }
 
         function renderStatus(status) {
             const container = document.getElementById('liveStatus');
             container.innerHTML = "";
-            // Show first 4 gamemodes that are "OPEN"
-            let openCount = 0;
-            for(const [gm, regions] of Object.entries(status)) {
-                for(const [reg, state] of Object.entries(regions)) {
-                    if(state === "OPEN" && openCount < 4) {
-                        container.innerHTML += `
-                            <div class="status-item">
-                                <div class="dot open"></div>
-                                <span>${gm} (${reg})</span>
-                            </div>`;
-                        openCount++;
+            for(const [gm, regs] of Object.entries(status)) {
+                for(const [reg, state] of Object.entries(regs)) {
+                    if(state === "OPEN") {
+                        container.innerHTML += `<div class="status-pill"><span class="dot online"></span>${gm} (${reg})</div>`;
                     }
                 }
             }
-            if(openCount === 0) container.innerHTML = '<div class="status-item"><div class="dot closed"></div><span>All Queues Closed</span></div>';
-        }
-
-        function updateTable(mode, btn) {
-            currentMode = mode;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderUI();
         }
 
         function renderUI() {
@@ -221,40 +209,33 @@
             const search = document.getElementById('playerSearch').value.toLowerCase();
             body.innerHTML = "";
 
-            const players = Object.keys(rawData)
-                .map(name => ({ username: name, ...rawData[name] }))
-                .filter(p => p.username.toLowerCase().includes(search));
-
-            players.forEach(p => {
-                if (currentMode !== 'all' && !p.tiers[currentMode]) return;
+            Object.keys(rawData).forEach(name => {
+                if(!name.toLowerCase().includes(search)) return;
+                const p = rawData[name];
                 
-                let ranksHTML = "";
-                if (currentMode === 'all') {
-                    for (const [gm, tier] of Object.entries(p.tiers)) {
-                        const cfg = config[gm] || { class: "" };
-                        ranksHTML += `<span class="rank-badge ${cfg.class}">${getIcon(gm)} ${tier}</span> `;
-                    }
-                } else {
-                    const cfg = config[currentMode];
-                    ranksHTML = `<span class="rank-badge ${cfg.class}">${getIcon(currentMode)} ${p.tiers[currentMode]}</span>`;
+                let badges = "";
+                for(const [gm, tier] of Object.entries(p.tiers)) {
+                    const cfg = config[gm] || { emoji: "⚔️" };
+                    const icon = cfg.emoji.includes('http') ? `<img src="${cfg.emoji}">` : cfg.emoji;
+                    badges += `<div class="badge">${icon} ${tier}</div> `;
                 }
 
                 body.innerHTML += `
                     <tr>
                         <td>
-                            <div class="player-cell">
-                                <img class="player-head" src="https://crafatar.com/avatars/${p.username}?size=32&overlay">
-                                <strong>${p.username}</strong>
+                            <div class="player-info">
+                                <img class="player-head" src="https://crafatar.com/avatars/${name}?size=40&overlay">
+                                <strong>${name}</strong>
                             </div>
                         </td>
-                        <td><span class="region-tag">${p.region || '??'}</span></td>
-                        <td>${ranksHTML}</td>
+                        <td><span style="color:var(--text-dim)">${p.region || 'EU'}</span></td>
+                        <td>${badges}</td>
                     </tr>`;
             });
         }
 
-        fetchData();
-        setInterval(fetchData, 30000); // Update every 30s
+        init();
+        setInterval(init, 30000);
     </script>
 </body>
 </html>
