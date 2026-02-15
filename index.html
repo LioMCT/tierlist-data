@@ -4,24 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VoyageTiers | Official Leaderboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-blur: rgba(10, 10, 12, 0.9);
-            --card-glass: rgba(25, 25, 30, 0.75);
-            --accent: #ffcc00; /* Matching the yellow in your logo */
+            --card-glass: rgba(25, 25, 30, 0.8);
+            --accent: #ffcc00;
             --accent-glow: rgba(255, 204, 0, 0.3);
             --text-main: #ffffff;
             --text-dim: #a0a0a0;
-            --status-open: #00ff88;
+            --tier-high: #ff4d4d;
+            --tier-mid: #ffcc00;
+            --tier-low: #00ff88;
         }
 
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
             color: var(--text-main);
-            /* High-quality Minecraft Background with Blur */
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
                         url('https://images.alphacoders.com/134/1343463.png');
             background-size: cover;
             background-attachment: fixed;
@@ -31,206 +32,166 @@
             min-height: 100vh;
         }
 
-        /* 💎 Logo & Header Section */
-        .header-section {
-            padding: 50px 0 20px 0;
-            text-align: center;
-        }
+        /* 💎 Header & Logo */
+        .header-section { padding: 40px 0 10px 0; text-align: center; }
+        .logo { max-width: 350px; filter: drop-shadow(0 0 15px var(--accent-glow)); cursor: pointer; }
 
-        .logo {
-            max-width: 400px;
-            filter: drop-shadow(0 0 15px rgba(255, 204, 0, 0.5));
-            transition: transform 0.3s ease;
-        }
-        
-        .logo:hover {
-            transform: scale(1.05);
-        }
-
-        /* 🟢 Status Ribbon */
-        .status-ribbon {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .status-pill {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px);
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-size: 0.8rem;
+        /* 🔗 Discord Button */
+        .discord-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #5865F2;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
             font-weight: 700;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .dot { height: 8px; width: 8px; border-radius: 50%; background: var(--status-open); box-shadow: 0 0 10px var(--status-open); }
-
-        /* 🔍 Search Interface */
-        .search-container {
-            width: 90%;
-            max-width: 1000px;
-            margin: 30px 0;
-        }
-
-        .search-bar {
-            width: 100%;
-            padding: 18px 25px;
-            background: var(--card-glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px;
-            color: white;
-            font-size: 1.1rem;
-            outline: none;
+            gap: 10px;
             transition: 0.3s;
-            box-sizing: border-box;
+            z-index: 100;
+        }
+        .discord-btn:hover { background: #4752c4; transform: translateY(-2px); }
+
+        /* 📂 Gamemode Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            overflow-x: auto;
+            max-width: 95%;
+            padding: 10px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: var(--card-glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        /* 🔍 Search bar */
+        .search-container { width: 90%; max-width: 1000px; margin-bottom: 20px; }
+        .search-bar {
+            width: 100%; padding: 15px 25px;
+            background: var(--card-glass);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; color: white; font-size: 1rem;
+            outline: none; box-sizing: border-box;
         }
 
-        .search-bar:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        /* 📋 Ultra-Style Leaderboard Card */
+        /* 📋 Leaderboard Table */
         .leaderboard-wrapper {
-            width: 90%;
-            max-width: 1100px;
+            width: 90%; max-width: 1000px;
             background: var(--card-glass);
             backdrop-filter: blur(20px);
+            border-radius: 20px; overflow: hidden;
+            margin-bottom: 50px;
             border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-            margin-bottom: 60px;
         }
-
         table { width: 100%; border-collapse: collapse; }
-        
-        th {
-            background: rgba(255,255,255,0.03);
-            padding: 22px;
-            text-align: left;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            font-weight: 800;
-            color: var(--text-dim);
-            letter-spacing: 1.5px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+        th { text-align: left; padding: 20px; color: var(--text-dim); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+        td { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        .player-info { display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .player-head { width: 35px; height: 35px; border-radius: 6px; }
+        .rank-badge { font-weight: 800; padding: 4px 10px; border-radius: 5px; background: rgba(0,0,0,0.3); }
+
+        /* 👤 Profile Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
         }
-
-        td { padding: 18px 22px; border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.2s; }
-
-        tr:hover td { background: rgba(255,255,255,0.02); }
-
-        /* 👤 Player Profile Display */
-        .player-cell { display: flex; align-items: center; gap: 18px; }
-        
-        .player-head {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            background: #222;
-            border: 2px solid rgba(255,255,255,0.1);
+        .modal-content {
+            background: #1a1d21; width: 400px; padding: 30px;
+            border-radius: 25px; border: 1px solid var(--accent);
+            text-align: center; position: relative;
         }
-
-        .player-name { font-weight: 700; font-size: 1.05rem; }
-
-        /* 🏷️ Tier Badges (Matching UltraTiers) */
-        .tier-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(0,0,0,0.3);
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.08);
-            margin-right: 8px;
-            margin-bottom: 5px;
-            font-weight: 800;
-            font-size: 0.85rem;
-        }
-
-        .tier-badge img { width: 18px; height: 18px; object-fit: contain; }
-
-        .region-tag {
-            color: var(--text-dim);
-            font-weight: 600;
-            font-size: 0.9rem;
-            background: rgba(255,255,255,0.05);
-            padding: 4px 10px;
-            border-radius: 6px;
-        }
-
+        .close-modal { position: absolute; top: 20px; right: 20px; cursor: pointer; font-size: 1.5rem; }
+        .modal-body-img { width: 100px; height: 100px; border-radius: 15px; margin-bottom: 15px; border: 2px solid var(--accent); }
+        .modal-tiers-list { text-align: left; margin-top: 20px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 10px; }
+        .modal-tier-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
+    <a href="https://discord.gg/ZenNjPnmrp" target="_blank" class="discord-btn">
+        <img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" width="20"> Join Discord
+    </a>
+
     <div class="header-section">
-        <img src="https://i.ibb.co/MacePVPlogo.jpg" alt="Voyage Tiers" class="logo">
-        <div id="liveStatus" class="status-ribbon"></div>
+        <img src="https://i.ibb.co/MacePVPlogo.jpg" class="logo" onclick="location.reload()">
     </div>
 
+    <nav class="nav-tabs" id="gamemodeTabs">
+        <div class="tab active" onclick="switchMode('Overall')">Overall</div>
+    </nav>
+
     <div class="search-container">
-        <input type="text" id="playerSearch" class="search-bar" placeholder="Search for a player username..." onkeyup="renderUI()">
+        <input type="text" id="playerSearch" class="search-bar" placeholder="Search for a player..." onkeyup="renderUI()">
     </div>
 
     <div class="leaderboard-wrapper">
         <table>
             <thead>
                 <tr>
-                    <th width="30%">Player</th>
-                    <th width="15%">Region</th>
-                    <th width="55%">Gamemode Rankings</th>
+                    <th>Player</th>
+                    <th>Region</th>
+                    <th id="rankColTitle">All Ranks</th>
                 </tr>
             </thead>
             <tbody id="leaderboardBody"></tbody>
         </table>
     </div>
 
+    <div class="modal-overlay" id="profileModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <span class="close-modal" onclick="closeModal()">×</span>
+            <img id="modalImg" class="modal-body-img">
+            <h2 id="modalName" style="margin:0">PlayerName</h2>
+            <p id="modalRegion" style="color:var(--text-dim); margin: 5px 0">Region: EU</p>
+            <div class="modal-tiers-list" id="modalTiers"></div>
+        </div>
+    </div>
+
     <script>
-        // Mapping gamemodes to Minecraft icons to match UltraTiers aesthetic
-        const gmConfig = {
-            "Mace": { icon: "https://minecraft.wiki/images/Mace_JE1_BE1.png" },
-            "Sword": { icon: "https://minecraft.wiki/images/Netherite_Sword_JE2_BE2.png" },
-            "Crystal": { icon: "https://minecraft.wiki/images/End_Crystal_JE2_BE2.png" },
-            "Axe": { icon: "https://minecraft.wiki/images/Netherite_Axe_JE2_BE2.png" },
-            "UHC": { icon: "https://minecraft.wiki/images/Golden_Apple_JE2_BE2.png" },
-            "Bed": { icon: "https://minecraft.wiki/images/Red_Bed_JE4_BE3.png" },
-            "SMP": { icon: "https://minecraft.wiki/images/Grass_Block_JE7_BE6.png" }
-        };
-
+        const DEFAULT_MODES = ["Mace", "SMP", "Sword", "Spear", "Debuff", "Crystal", "UHC", "Axe"];
         let database = {};
+        let currentMode = "Overall";
 
-        async function loadData() {
+        async function init() {
             try {
-                // Fetch player data
                 const res = await fetch('https://raw.githubusercontent.com/LioMCT/tierlist-data/main/tierlist.json?t=' + Date.now());
                 database = await res.json();
                 
-                // Fetch queue status
-                const sRes = await fetch('https://raw.githubusercontent.com/LioMCT/tierlist-data/main/status.json?t=' + Date.now());
-                renderStatus(await sRes.json());
-                
+                // Create tabs dynamically
+                const tabs = document.getElementById('gamemodeTabs');
+                DEFAULT_MODES.forEach(m => {
+                    const t = document.createElement('div');
+                    t.className = 'tab';
+                    t.innerText = m;
+                    t.onclick = () => switchMode(m);
+                    tabs.appendChild(t);
+                });
+
                 renderUI();
-            } catch(e) { console.error("Failed to load data:", e); }
+            } catch(e) { console.error(e); }
         }
 
-        function renderStatus(status) {
-            const container = document.getElementById('liveStatus');
-            container.innerHTML = "";
-            for(const [gm, regs] of Object.entries(status)) {
-                for(const [reg, state] of Object.entries(regs)) {
-                    if(state === "OPEN") {
-                        container.innerHTML += `<div class="status-pill"><span class="dot"></span> ${gm} • ${reg}</div>`;
-                    }
-                }
-            }
+        function switchMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('rankColTitle').innerText = mode === "Overall" ? "All Ranks" : "Rank";
+            renderUI();
         }
 
         function renderUI() {
@@ -238,33 +199,52 @@
             const query = document.getElementById('playerSearch').value.toLowerCase();
             body.innerHTML = "";
 
-            Object.keys(database).sort().forEach(name => {
+            Object.keys(database).forEach(name => {
+                const p = database[name];
                 if(!name.toLowerCase().includes(query)) return;
-                const data = database[name];
                 
-                let tierHTML = "";
-                for(const [mode, rank] of Object.entries(data.tiers)) {
-                    const icon = gmConfig[mode] ? `<img src="${gmConfig[mode].icon}">` : "⚔️";
-                    tierHTML += `<div class="tier-badge">${icon} ${rank}</div>`;
+                // If specific mode selected, only show players who have a rank in that mode
+                if(currentMode !== "Overall" && !p.tiers[currentMode]) return;
+
+                let displayRank = "";
+                if(currentMode === "Overall") {
+                    displayRank = Object.values(p.tiers).slice(0, 3).join(", ") + (Object.keys(p.tiers).length > 3 ? "..." : "");
+                } else {
+                    displayRank = `<span class="rank-badge">${p.tiers[currentMode]}</span>`;
                 }
 
                 body.innerHTML += `
-                    <tr>
+                    <tr onclick="showProfile('${name}')">
                         <td>
-                            <div class="player-cell">
-                                <img class="player-head" src="https://crafatar.com/avatars/${name}?size=44&overlay">
-                                <div class="player-name">${name}</div>
+                            <div class="player-info">
+                                <img class="player-head" src="https://crafatar.com/avatars/${name}?size=35&overlay">
+                                <strong>${name}</strong>
                             </div>
                         </td>
-                        <td><span class="region-tag">${data.region || 'EU'}</span></td>
-                        <td>${tierHTML}</td>
+                        <td>${p.region || 'EU'}</td>
+                        <td>${displayRank}</td>
                     </tr>`;
             });
         }
 
-        // Initial Load and Auto-Refresh every 30 seconds
-        loadData();
-        setInterval(loadData, 30000);
+        function showProfile(name) {
+            const p = database[name];
+            document.getElementById('modalImg').src = `https://crafatar.com/renders/body/${name}?overlay`;
+            document.getElementById('modalName').innerText = name;
+            document.getElementById('modalRegion').innerText = "Region: " + (p.region || "EU");
+            
+            const list = document.getElementById('modalTiers');
+            list.innerHTML = "<h4>Gamemode Rankings</h4>";
+            for(const [m, r] of Object.entries(p.tiers)) {
+                list.innerHTML += `<div class="modal-tier-row"><span>${m}</span><b>${r}</b></div>`;
+            }
+            
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+
+        function closeModal(e) { document.getElementById('profileModal').style.display = 'none'; }
+
+        init();
     </script>
 </body>
 </html>
